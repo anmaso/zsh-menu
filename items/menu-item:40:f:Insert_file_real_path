@@ -1,0 +1,14 @@
+# Pick a file under the current directory with fzf and insert its full real
+# path (symlinks resolved), shell-quoted, at the cursor.
+(( $+commands[fzf] )) || { zle -M "fzf not found"; return 0 }
+local file
+if (( $+commands[fd] )); then
+  file=$(fd --type f --type l --hidden --exclude .git 2>/dev/null |
+    fzf --height=40% --reverse --prompt='file> ' </dev/tty)
+else
+  file=$(find . \( -type f -o -type l \) -not -path '*/.git/*' 2>/dev/null |
+    fzf --height=40% --reverse --prompt='file> ' </dev/tty)
+fi
+zle reset-prompt
+[[ -n $file ]] && LBUFFER+="${(q)file:A} "
+return 0
