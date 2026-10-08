@@ -20,7 +20,7 @@ Source the widget from `~/.zshrc`:
 source ~/personal/zsh-widgets/zsh-menu-widget/menu-widget.zsh
 ```
 
-Press **Ctrl-K** to open the menu. Esc, Enter, `q` or any unbound key closes it.
+Press **Ctrl-K** to open the menu (configurable, see below). Esc, Enter, `q` or any unbound key closes it.
 
 Requires zsh on macOS (`pbcopy`). The `e`, `E` and `f` items need [fzf](https://github.com/junegunn/fzf). `f` uses [fd](https://github.com/sharkdp/fd) when available and falls back to `find`.
 
@@ -90,15 +90,22 @@ To insert text from your own item, append to `LBUFFER` (text before the cursor).
 
 Set these before sourcing the widget (or change `MENU_WIDGET_POSITION` any time, it is read on each open).
 
-### Key binding
+### Key bindings
 
-Ctrl-K is bound in the `viins` and `emacs` keymaps at the end of `menu-widget.zsh`. To use a different key, edit those lines or add your own after sourcing:
+By default the menu opens with **Ctrl-K**, bound in the `viins` and `emacs` keymaps. Set `MENU_WIDGET_KEYS` (an array of zsh key strings) **before sourcing** to change them:
 
 ```zsh
-bindkey '\e,' menu-widget
+MENU_WIDGET_KEYS=('^@')          # Ctrl-Space only
+MENU_WIDGET_KEYS=('^K' '^@')     # Ctrl-K and Ctrl-Space
+MENU_WIDGET_KEYS=('\e,' '^K')    # Alt-comma and Ctrl-K
+MENU_WIDGET_KEYS=()              # bind nothing; use `bindkey ... menu-widget` yourself
+source ~/personal/zsh-widgets/zsh-menu-widget/menu-widget.zsh
 ```
 
-Ctrl-I can't be used: it is the same byte as Tab in a terminal.
+Notes:
+- Ctrl-Space sends the NUL byte, written `^@`. macOS may intercept it if "Select the previous input source" (System Settings → Keyboard → Keyboard Shortcuts → Input Sources) is enabled with several input sources.
+- Ctrl-K replaces `kill-line` in emacs mode.
+- Ctrl-I can't be used: it is the same byte as Tab in a terminal.
 
 ## How it works
 

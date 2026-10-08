@@ -1,6 +1,6 @@
 # menu-widget.zsh — popup menu of shell actions, drawn at the bottom right.
 #
-# Usage: source this file from ~/.zshrc, then press Ctrl-K (see bindkey below).
+# Usage: source this file from ~/.zshrc, then press Ctrl-K (see MENU_WIDGET_KEYS below).
 # Press an item's shortcut to run it; Esc / Enter / q / Ctrl-C closes the menu.
 # Whatever you had typed on the command line is left untouched.
 
@@ -169,5 +169,18 @@ menu-widget() {
   done
 }
 zle -N menu-widget
-bindkey -M viins '^K' menu-widget
-bindkey -M emacs '^K' menu-widget
+
+# Key bindings: set MENU_WIDGET_KEYS before sourcing to change them, e.g.
+#   MENU_WIDGET_KEYS=('^@')        # Ctrl-Space only
+#   MENU_WIDGET_KEYS=('\e,' '^K')  # Alt-comma and Ctrl-K
+#   MENU_WIDGET_KEYS=()            # bind nothing, do it yourself
+# Default: Ctrl-K.
+(( ${+MENU_WIDGET_KEYS} )) || typeset -ga MENU_WIDGET_KEYS=('^K')
+() {
+  local k m
+  for k in $MENU_WIDGET_KEYS; do
+    for m in viins emacs; do
+      bindkey -M $m $k menu-widget
+    done
+  done
+}
